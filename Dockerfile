@@ -2,26 +2,43 @@
 
 FROM archlinux
 
-ARG DOCKER_USER
 ARG DOCKER_USER_ID=1000
-ARG DOCKER_GROUP=users2
 
-ENV DOCKER_USER=${DOCKER_USER}
-ENV DOCKER_USER_ID=${DOCKER_USER_ID}
+ARG DOCKER_GROUP=users
 ENV DOCKER_GROUP=${DOCKER_GROUP}
-ENV LANG=ja_JP.UTF-8
-ENV LANGUAGE=ja_JP:ja
-ENV LC_ALL=ja_JP.UTF-8
+
+ARG DOCKER_USER
+ENV DOCKER_USER=${DOCKER_USER}
+
+ARG DOCKER_USER_PASSWD=${DOCKER_USER}
+ENV DOCKER_USER_PASSWD=${DOCKER_USER_PASSWD}
+
+RUN sed -i -e 's|^\(NoExtract *= *usr/share/man/\)|#\1|' /etc/pacman.conf
 
 # required base packages
-RUN pacman -Syu --noconfirm --needed base base-devel git vim wget curl sudo coreutils
+RUN pacman-key --init
+
+RUN cat /etc/pacman.d/mirrorlist | cat <(curl -s "https://archlinux.org/mirrorlist/?country=JP" | sed -e 's/^#Server/Server/') - > /etc/pacman.d/mirrorlist
+RUN sed -i '/^#Server = https:\/\/.*\.jp\/.*$/s/^#//' /etc/pacman.d/mirrorlist
+
+RUN pacman -Syyu --noconfirm && \
+    pacman -Sy --noconfirm \
+    base base-devel \
+    bash bash-completion \
+    sudo \
+    man-db man-pages \
+    coreutils \
+    gzip which less wget binutils \
+    vim \
+    git \
+    systemd \
+    && \
+    pacman -Scc && \
+    rm -rf /var/cache/pacman/*
 
 # locale
 RUN echo LANG=en_US.UTF-8 > /etc/locale.conf && \
-    tee -a /etc/locale.gen <<EOL \
-    ja_JP.UTF-8 UTF-8 \
-    en_US.UTF-8 UTF-8 \
-    EOL && \
+    echo "en_US.UTF-8 UTF-8" | tee -a /etc/locale.gen && \
     locale-gen
 
 # timezone
@@ -32,14 +49,15 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
 RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/group; then \
         groupadd "${DOCKER_GROUP}"; \
     fi
-RUN useradd -m -u ${DOCKER_USER_ID} -G ${DOCKER_GROUP} ${DOCKER_USER}
-RUN echo "%${DOCKER_USER} ALL=(ALL) ALL" >> /etc/sudoers
+RUN useradd -m -s /bin/bash -u ${DOCKER_USER_ID} -G ${DOCKER_GROUP} ${DOCKER_USER}
 RUN echo "${DOCKER_USER}:${DOCKER_USER_PASSWD}" | chpasswd
+RUN echo "${DOCKER_USER} ALL=(ALL) ALL" >> /etc/sudoers
 RUN mkdir -p /home/${DOCKER_USER}/work
 RUN chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
 
 # wsl2
 COPY wsl.conf /etc/wsl.conf
+RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf
 
 USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
