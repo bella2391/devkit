@@ -4,11 +4,10 @@ services:
       context: .
       args:
         DOCKER_USER: ${DOCKER_USER}
-        DOCKER_USER_ID: ${DOCKER_USER_ID}
+        DOCKER_USER_PASSWD: ${DOCKER_USER_PASSWD}
         DOCKER_GROUP: ${DOCKER_GROUP}
     environment:
       - DOCKER_USER=${DOCKER_USER}
-      - DOCKER_USER_ID=${DOCKER_USER_ID}
       - DOCKER_GROUP=${DOCKER_GROUP}
       - TZ=Asia/Tokyo
       - LANG=ja_JP.UTF-8
