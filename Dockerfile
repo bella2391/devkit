@@ -29,7 +29,9 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     echo "Asia/Tokyo" > /etc/timezone
 
 # user
-RUN groupadd "${DOCKER_GROUP}"
+RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/groups; then \
+        groupadd "${DOCKER_GROUP}"; \
+    fi
 RUN useradd -m -u ${DOCKER_USER_ID} -G ${DOCKER_GROUP} ${DOCKER_USER}
 RUN echo "%${DOCKER_USER} ALL=(ALL) ALL" >> /etc/sudoers
 RUN mkdir -p /home/${DOCKER_USER}/work
