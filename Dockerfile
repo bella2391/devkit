@@ -29,7 +29,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     echo "Asia/Tokyo" > /etc/timezone
 
 # user
-RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/groups; then \
+RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/group; then \
         groupadd "${DOCKER_GROUP}"; \
     fi
 RUN useradd -m -u ${DOCKER_USER_ID} -G ${DOCKER_GROUP} ${DOCKER_USER}
