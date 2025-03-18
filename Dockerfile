@@ -1,3 +1,4 @@
+
 # syntax = docker/dockerfile:1.2
 
 FROM archlinux
@@ -19,7 +20,7 @@ RUN sed -i -e 's|^\(NoExtract *= *usr/share/man/\)|#\1|' /etc/pacman.conf
 # required base packages
 RUN pacman-key --init
 
-RUN cat /etc/pacman.d/mirrorlist | cat <(curl -s "https://archlinux.org/mirrorlist/?country=JP" | sed -e 's/^#Server/Server/') - > /etc/pacman.d/mirrorlist
+RUN curl -s "https://archlinux.org/mirrorlist/?country=JP" | sed -e 's/^#Server/Server/' >> /etc/pacman.d/mirrorlist
 RUN sed -i '/^#Server = https:\/\/.*\.jp\/.*$/s/^#//' /etc/pacman.d/mirrorlist
 
 RUN pacman -Syyu --noconfirm && \
@@ -56,11 +57,17 @@ RUN echo "${DOCKER_USER} ALL=(ALL) ALL" >> /etc/sudoers
 RUN mkdir -p /home/${DOCKER_USER}/work
 RUN chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
 
+# systemd を有効にする設定
+VOLUME /sys/fs/cgroup
+RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
+
 # wsl2
 COPY wsl.conf /etc/wsl.conf
-RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf
+RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf && \
+    chmod 644 /etc/wsl.conf
 
 USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
-CMD ["bash"]
+CMD ["/sbin/init"]
+
