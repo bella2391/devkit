@@ -89,14 +89,14 @@ def animated_message(stop_event):
         if stop_event.is_set():
             break
 
-        print(f"\rtarファイルを作成中です {' '.join('.' * i)}", end="", flush=True)
+        print(f"\rwslファイルを作成中です {' '.join('.' * i)}", end="", flush=True)
         i += 1
         time.sleep(0.5)  # 0.5秒ごとに更新
-    print("\rtarファイルの作成が完了しました。         ")
+    print("\rwslファイルの作成が完了しました。         ")
 
-def export_tar(container_name, env_vars):
+def export_wsl(container_name, env_vars):
     """Dockerコマンドを実行する関数"""
-    export_confirmation = input_with_default(f"WSLでイメージ '{container_name}' をインポートするためのtarファイルを作成しますか？", "Y").upper()
+    export_confirmation = input_with_default(f"WSLでイメージ '{container_name}' をインポートするためのwslファイルを作成しますか？", "Y").upper()
     if export_confirmation == "Y":
         subprocess.run([
             "docker", "run", "-d", "--name", container_name, "--privileged",
@@ -107,23 +107,30 @@ def export_tar(container_name, env_vars):
         ], check=True)
         print(f"コンテナ '{container_name}' が起動しました。")
 
-        export_path = input("tarファイルの出力ディレクトリを指定してください (デフォルト: カレントディレクトリ): ").strip()
+        export_path = input("wslファイルの出力ディレクトリを指定してください (デフォルト: カレントディレクトリ): ").strip()
         if not export_path:
             export_path = os.getcwd()
 
-        tar_file_path = os.path.join(export_path, f"{container_name}.tar")
+        wsl_file_path = os.path.join(export_path, f"{container_name}.wsl")
 
         stop_event = threading.Event()
         animation_thread = threading.Thread(target=animated_message, args=(stop_event,))
         animation_thread.start()
 
         try:
-            subprocess.run(["docker", "export", "-o", tar_file_path, container_name], check=True)
+            subprocess.run(["docker", "export", "-o", wsl_file_path, container_name], check=True)
         finally:
             stop_event.set()
             animation_thread.join()
 
-        print(f"tarファイルを {tar_file_path} に作成しました。")
+        print(f"wslファイルを {wsl_file_path} に作成しました。")
+
+        exec_confirmation = input_with_default("WSLにインポートしますか？（Windows用）", "Y").upper()
+        if exec_confirmation == "Y":
+            print(f"{container_name}.wsl のインポートを開始します。")
+            subprocess.run(["wsl", "--install", "--from-file", wsl_file_path], check=True)
+        else:
+            print(f"{container_name}.wsl のインポートをスキップしました。")
 
         remove_confirmation = input_with_default("既存のコンテナを削除しますか？", "Y").upper()
         if remove_confirmation == "Y":
@@ -132,8 +139,10 @@ def export_tar(container_name, env_vars):
             print(f"コンテナ '{container_name}' を削除しました。")
         else:
             print(f"コンテナ '{container_name}' の削除をスキップしました。")
+
+        print("すべての操作が終了しました。")
     else:
-        print("\ntarファイルのエクスポートを中断しました。")
+        print("\nwslファイルのエクスポートを中断しました。")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Docker環境セットアップスクリプト")
@@ -141,6 +150,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
+        if args.debug:
+            print("=== デバッグモードが有効です。 ===")
+
         env_vars = load_env()
         if not env_vars:
             env_vars = prompt_env({})
@@ -150,7 +162,7 @@ if __name__ == "__main__":
         if args.debug:
             run_docker_container_with_tty(container_name, env_vars)
         else:
-            export_tar(container_name, env_vars)
+            export_wsl(container_name, env_vars)
     except KeyboardInterrupt:
         print("\n操作を中断しました。")
 
