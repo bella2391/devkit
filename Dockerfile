@@ -1,10 +1,8 @@
-
 # syntax = docker/dockerfile:1.2
 
-FROM archlinux
+FROM archlinux:latest
 
 ARG DOCKER_USER_ID=1000
-
 ARG DOCKER_USER
 ARG DOCKER_USER_PASSWD
 ARG DOCKER_GROUP
@@ -33,7 +31,7 @@ RUN pacman -Syyu --noconfirm && \
     gzip which less wget binutils \
     vim \
     git \
-    systemd \
+    systemd systemd-sysvcompat \
     && \
     pacman -Scc && \
     rm -rf /var/cache/pacman/*
@@ -57,17 +55,19 @@ RUN echo "${DOCKER_USER} ALL=(ALL) ALL" >> /etc/sudoers
 RUN mkdir -p /home/${DOCKER_USER}/work
 RUN chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
 
-# systemd を有効にする設定
-VOLUME /sys/fs/cgroup
-RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
+RUN mkdir -p /etc/systemd/system/getty@tty1.service.d && \
+    echo "[Service]\nExecStart=\nExecStart=-/sbin/agetty --noclear %I \$TERM" > /etc/systemd/system/getty@tty1.service.d/override.conf
 
-# wsl2
+# WSL2
 COPY wsl.conf /etc/wsl.conf
 RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf && \
     chmod 644 /etc/wsl.conf
 
-USER ${DOCKER_USER}
-WORKDIR /home/${DOCKER_USER}/work
+# USER ${DOCKER_USER}
+# WORKDIR /home/${DOCKER_USER}/work
 
-CMD ["/sbin/init"]
+ENV container=docker
+
+STOPSIGNAL SIGRTMIN+3
+CMD ["/usr/lib/systemd/systemd"]
 
