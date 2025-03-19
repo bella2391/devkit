@@ -62,7 +62,7 @@ RUN mkdir -p /etc/systemd/system/getty@tty1.service.d && \
 WORKDIR /app
 COPY . /app/
 
-RUN pacman -S dos2unix --noconfirm && \
+RUN pacman -Sy --noconfirm dos2unix && \
     find /app/config /app/scripts -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; && \
     sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /app/config/wsl.conf && \
     chmod 644 /app/config/wsl.conf && \
@@ -75,6 +75,12 @@ RUN mkdir -p /usr/lib/wsl/ && \
     cp /app/config/terminal-profile.json /usr/lib/wsl/terminal-profile.json && \
     cp /app/assets/archlinux.ico /usr/lib/wsl/archlinux.ico && \
     cp /app/scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
+
+USER ${DOCKER_USER}
+WORKDIR /home/${DOCKER_USER}/work
+
+RUN sudo pacman -Sy --noconfirm \
+    kitty starship w3m lazygit tree unzip neovim
 
 ENV container=docker
 
