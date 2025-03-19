@@ -59,18 +59,24 @@ RUN mkdir -p /etc/systemd/system/getty@tty1.service.d && \
     echo "[Service]\nExecStart=\nExecStart=-/sbin/agetty --noclear %I \$TERM" > /etc/systemd/system/getty@tty1.service.d/override.conf
 
 # WSL2
-COPY config/wsl.conf /etc/wsl.conf
-COPY config/wsl-distribution.conf /etc/wsl-distribution.conf
-COPY config/terminal-profile.json /usr/lib/wsl/terminal-profile.json
-COPY assets/archlinux.ico /usr/lib/wsl/archlinux.ico
-COPY scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
-RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf && \
-    chmod 644 /etc/wsl.conf && \
-    chmod 644 /etc/wsl-distribution.conf && \
-    chmod +x /usr/lib/wsl/first-setup.sh
+WORKDIR /app
+COPY . /app/
 
-# USER ${DOCKER_USER}
-# WORKDIR /home/${DOCKER_USER}/work
+RUN pacman -S dos2unix --noconfirm && \
+    chmod +x /app/scripts/convert_encoding.sh && \
+    # find /app/config /app/scripts -type f -exec /app/scripts/convert_encoding.sh {} \; && \
+    find /app/config /app/scripts -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; && \
+    sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /app/config/wsl.conf && \
+    chmod 644 /app/config/wsl.conf && \
+    chmod 644 /app/config/wsl-distribution.conf && \
+    chmod +x /app/scripts/first-setup.sh
+
+RUN mkdir -p /usr/lib/wsl/ && \
+    cp /app/config/wsl.conf /etc/wsl.conf && \
+    cp /app/config/wsl-distribution.conf /etc/wsl-distribution.conf && \
+    cp /app/config/terminal-profile.json /usr/lib/wsl/terminal-profile.json && \
+    cp /app/assets/archlinux.ico /usr/lib/wsl/archlinux.ico && \
+    cp /app/scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
 
 ENV container=docker
 
