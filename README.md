@@ -7,5 +7,9 @@
 * Docker
 * Python
 
+## Install
+```bash
+python setup.py
+```
 ## License
 [MIT](LICENSE.txt)
