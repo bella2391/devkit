@@ -9,7 +9,7 @@
 
 ## Install
 ```bash
-python setup.py
+$ python setup.py
 ```
 ## License
 [MIT](LICENSE.txt)
