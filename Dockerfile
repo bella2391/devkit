@@ -63,9 +63,11 @@ COPY config/wsl.conf /etc/wsl.conf
 COPY config/wsl-distribution.conf /etc/wsl-distribution.conf
 COPY config/terminal-profile.json /usr/lib/wsl/terminal-profile.json
 COPY assets/archlinux.ico /usr/lib/wsl/archlinux.ico
+COPY scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
 RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf && \
-    chmod 644 /etc/wsl.conf \
-    chmod 644 /etc/wsl-distribution.conf
+    chmod 644 /etc/wsl.conf && \
+    chmod 644 /etc/wsl-distribution.conf && \
+    chmod +x /usr/lib/wsl/first-setup.sh
 
 # USER ${DOCKER_USER}
 # WORKDIR /home/${DOCKER_USER}/work
