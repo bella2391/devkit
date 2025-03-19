@@ -3,3 +3,4 @@
 *.tar
 *.vhdx
 *.copy
+*.wsl
