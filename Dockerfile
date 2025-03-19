@@ -59,10 +59,13 @@ RUN mkdir -p /etc/systemd/system/getty@tty1.service.d && \
     echo "[Service]\nExecStart=\nExecStart=-/sbin/agetty --noclear %I \$TERM" > /etc/systemd/system/getty@tty1.service.d/override.conf
 
 # WSL2
-COPY wsl.conf /etc/wsl.conf
+COPY config/wsl.conf /etc/wsl.conf
+COPY config/wsl-distribution.conf /etc/wsl-distribution.conf
+COPY config/terminal-profile.json /usr/lib/wsl/terminal-profile.json
 COPY assets/archlinux.ico /usr/lib/wsl/archlinux.ico
 RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf && \
-    chmod 644 /etc/wsl.conf
+    chmod 644 /etc/wsl.conf \
+    chmod 644 /etc/wsl-distribution.conf
 
 # USER ${DOCKER_USER}
 # WORKDIR /home/${DOCKER_USER}/work
