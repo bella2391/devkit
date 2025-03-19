@@ -1,0 +1,3 @@
+**Arch Linux Trademark Notice:**
+
+This project may utilize the Arch Linux logo or other trademarks. This usage is in compliance with the Arch Linux Trademark Policy. This project is not officially endorsed or affiliated with Arch Linux.

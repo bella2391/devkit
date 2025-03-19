@@ -60,6 +60,7 @@ RUN mkdir -p /etc/systemd/system/getty@tty1.service.d && \
 
 # WSL2
 COPY wsl.conf /etc/wsl.conf
+COPY assets/archlinux.ico /usr/lib/wsl/archlinux.ico
 RUN sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /etc/wsl.conf && \
     chmod 644 /etc/wsl.conf
 
