@@ -7,9 +7,16 @@
 * Docker
 * Python
 
-## Install
-```bash
+## Setup
+### Install
+```
 $ python setup.py
 ```
+### Debug
+enter docker container
+```
+$ python setup.py --debug
+```
+
 ## License
 [MIT](LICENSE.txt)
