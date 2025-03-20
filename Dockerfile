@@ -81,6 +81,10 @@ WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
     tree unzip
+# RUN sudo pacman -Sy --noconfirm \
+#     kitty starship w3m lazygit tree unzip neovim \
+#     tree unzip
+
 # win32yank for wsl
 RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
     unzip win32yank-x64.zip -d ~/.global/bin/ && \
