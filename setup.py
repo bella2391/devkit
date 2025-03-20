@@ -41,12 +41,25 @@ def prompt_env(env_vars):
     print(f"Environment variables saved to {env_file}")
     return env_vars
 
+def import_module():
+    print("ビルドに必要なファイルをダウンロードします。")
+    try:
+        subprocess.run(["git", "submodule", "update", "--init", "--recursive"], check=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"エラーが発生しました: {e}")
+    return False
+
 def build_docker_image(env_vars):
     """ Docker イメージをビルド """
     container_name = f"devkit_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
     build_confirmation = input_with_default(f"Dockerイメージ '{container_name}' をビルドしますか？", "Y").upper()
     if build_confirmation == "Y":
+        module_check = import_module()
+        if not module_check:
+            return
+
         try:
             subprocess.run([
                 "docker", "build",
