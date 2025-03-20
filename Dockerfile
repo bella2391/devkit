@@ -81,6 +81,7 @@ WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
     kitty starship w3m lazygit tree unzip neovim
+USER root
 
 ENV container=docker
 
