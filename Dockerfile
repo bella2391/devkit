@@ -11,12 +11,11 @@ ENV DOCKER_USER=${DOCKER_USER}
 ENV DOCKER_USER_PASSWD=${DOCKER_USER_PASSWD}
 ENV DOCKER_GROUP=${DOCKER_GROUP}
 
-RUN pacman-key --init >> /dev/null
-
 RUN curl -s "https://archlinux.org/mirrorlist/?country=JP" | sed -e 's/^#Server/Server/' >> /etc/pacman.d/mirrorlist
 RUN sed -i '/^#Server = https:\/\/.*\.jp\/.*$/s/^#//' /etc/pacman.d/mirrorlist
 
-RUN pacman -Syyu --noconfirm && \
+RUN pacman-key --init >> /dev/null && \
+    pacman -Syyu --noconfirm && \
     pacman -Sy --noconfirm \
     base base-devel \
     bash bash-completion \
