@@ -56,18 +56,17 @@ WORKDIR /app
 COPY . /app/
 
 RUN pacman -Sy --noconfirm dos2unix && \
-    find /app/config /app/scripts -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; >> /dev/null 2>&1 && \
-    sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" /app/config/wsl.conf && \
-    chmod 644 /app/config/wsl.conf && \
-    chmod 644 /app/config/wsl-distribution.conf && \
-    chmod +x /app/scripts/first-setup.sh
-
-RUN mkdir -p /usr/lib/wsl/ && \
-    cp /app/config/wsl.conf /etc/wsl.conf && \
-    cp /app/config/wsl-distribution.conf /etc/wsl-distribution.conf && \
-    cp /app/config/terminal-profile.json /usr/lib/wsl/terminal-profile.json && \
-    cp /app/assets/archlinux.ico /usr/lib/wsl/archlinux.ico && \
-    cp /app/scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
+    find config scripts -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; >> /dev/null 2>&1 && \
+    sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" config/wsl.conf && \
+    chmod 644 config/wsl.conf && \
+    chmod 644 config/wsl-distribution.conf && \
+    chmod +x scripts/first-setup.sh && \
+    mkdir -p /usr/lib/wsl/ && \
+    cp config/wsl.conf /etc/wsl.conf && \
+    cp config/wsl-distribution.conf /etc/wsl-distribution.conf && \
+    cp config/terminal-profile.json /usr/lib/wsl/terminal-profile.json && \
+    cp assets/archlinux.ico /usr/lib/wsl/archlinux.ico && \
+    cp scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
 
 # create development for programming
 USER ${DOCKER_USER}
