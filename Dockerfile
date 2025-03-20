@@ -76,17 +76,17 @@ RUN sudo pacman -Sy --noconfirm \
     kitty imagemagick starship w3m lazygit neovim firefox
 
 # yay
-RUN sudo pacman -Sy --noconfirm go && \
-    git clone https://aur.archlinux.org/yay.git && \
-    cd yay && \
-    makepkg --noconfirm -si && \
-    yay -Syyu --noconfirm
+# RUN sudo pacman -Sy --noconfirm go && \
+#     git clone https://aur.archlinux.org/yay.git && \
+#     cd yay && \
+#     makepkg --noconfirm -si && \
+#     yay -Syyu --noconfirm
 
 # fonts
-RUN mkdir -p ~/.local/share/fonts && \
-    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Agave.zip && \
-    unzip Agave.zip -d ~/.local/share/fonts/ && \
-    fc-cache -fv
+# RUN mkdir -p ~/.local/share/fonts && \
+#     wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Agave.zip && \
+#     unzip Agave.zip -d ~/.local/share/fonts/ && \
+#     fc-cache -fv
 
 # dotfiles
 RUN git clone https://github.com/bella2391/dotfiles.git && \
@@ -100,43 +100,53 @@ RUN git clone https://github.com/bella2391/dotfiles.git && \
     source ~/.bashrc >> /dev/null
 
 # win32yank for wsl
-RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
-    unzip win32yank-x64.zip -d ~/.global/bin/ && \
-    rm ~/.global/bin/README.md ~/.global/bin/LICENSE && \
-    chmod +x ~/.global/bin/win32yank.exe
+# RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
+#     unzip win32yank-x64.zip -d ~/.global/bin/ && \
+#     rm ~/.global/bin/README.md ~/.global/bin/LICENSE && \
+#     chmod +x ~/.global/bin/win32yank.exe
 
 # rustup/cargo
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y >> /dev/null 2>&1
+# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y >> /dev/null 2>&1
 
 # pyenv
-RUN sudo pacman -Sy --noconfirm tk && \
-    curl -fsSL https://pyenv.run | bash >> /dev/null 2>&1 && \
-    pyenv install 3.13.2 >> /dev/null 2>&1 && \
-    pyenv global 3.13.2
-
-# docker
-# RUN sudo pacman -Sy --noconfirm docker docker-compose
+# RUN sudo pacman -Sy --noconfirm tk pyenv && \
+#     export PYENV_ROOT="$HOME/.pyenv" && \
+#     export PATH="$PYENV_ROOT/bin:$PATH" && \
+#     eval "$(pyenv init --path)" && \
+#     eval "$(pyenv init -)" && \
+#     eval "$(pyenv virtualenv-init -)" && \
+#     pyenv install 3.13.2 >> /dev/null 2>&1 && \
+#     pyenv global 3.13.2
 
 # import bella, my repositories
-RUN mkdir -p ~/git/ && \
-    cd ~/git/ && \
-    parallel 'git clone https://github.com/bella2391/{}.git' ::: FMC FMCWebApp && \
-    mkdir -p Learning && \
-    cd Learning && \
-    parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
+# RUN mkdir -p ~/git/ && \
+#     cd ~/git/ && \
+#     parallel 'git clone https://github.com/bella2391/{}.git' ::: FMC FMCWebApp && \
+#     mkdir -p Learning && \
+#     cd Learning && \
+#     parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
 
 # github-credential-manager
-RUN yay -S --noconfirm git-credential-manager-core-extras && \
-    git config --global credential.helper 'manager' && \
-    git config --global credential.credentialStore secretservice
+# RUN yay -S --noconfirm git-credential-manager-core-extras && \
+#     git config --global credential.helper 'manager' && \
+#     git config --global credential.credentialStore secretservice
 
 # scala
-RUN curl -s "https://get.sdkman.io" | bash && \
-    sdk install java $(sdk list java | grep -o "\b8\.[0-9]*\.[0-9]*\-tem" | head -1) && \
-    sdk install sbt && \
-    # sdk install java 17.0.12-oracle && \
-    yay -S --noconfirm coursier && \
-    cs install metals
+# RUN curl -s "https://get.sdkman.io" | bash && \
+#     source ~/.sdkman/bin/sdkman-init.sh && \
+#     export SDKMAN_AUTO_ANSWER=true && \
+#     sdk install java 17.0.12-oracle && \
+#     sdk install sbt && \
+#     yay -S --noconfirm coursier && \
+#     coursier setup -y && \
+#     coursier install metals
+
+# nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash && \
+    export NVM_DIR="$HOME/.nvm" && \
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
+    nvm install 22.12.0
 
 USER root
 
