@@ -94,6 +94,7 @@ RUN git clone https://github.com/bella2391/dotfiles.git && \
     # find . -mindepth 1 -maxdepth 1 -exec mv -t ~ {} + && \
     find . -mindepth 1 ! -path "./.config*" -maxdepth 1 -exec mv -t ~ {} + && \
     cd .config && \
+    mkdir -p ~/.config/ && \
     find . -mindepth 1 -maxdepth 1 -exec mv -t ~/.config/ {} + && \
     cd ~ && \
     git submodule update --init --recursive && \
