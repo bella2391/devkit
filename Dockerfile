@@ -76,6 +76,7 @@ RUN mkdir -p /usr/lib/wsl/ && \
     cp /app/assets/archlinux.ico /usr/lib/wsl/archlinux.ico && \
     cp /app/scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
 
+# create development for programming
 USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
@@ -90,6 +91,14 @@ RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32ya
     unzip win32yank-x64.zip -d ~/.global/bin/ && \
     rm ~/.global/bin/README.md ~/.global/bin/LICENSE && \
     chmod +x ~/.global/bin/win32yank.exe
+
+# dotfiles
+RUN git clone https://github.com/bella2391/dotfiles.git && \
+    cd dotfiles && \
+    find . -mindepth 1 -maxdepth 1 -exec mv -t ~ {} + && \
+    cd ~ && \
+    git submodule update --init --recursive && \
+    source ~/.bashrc >> /dev/null
 
 # rustup/cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
