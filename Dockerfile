@@ -22,7 +22,7 @@ RUN pacman-key --init >> /dev/null && \
     sudo \
     man-db man-pages \
     coreutils \
-    gzip unzip tree which less wget binutils parallel \
+    gzip unzip zip tree which less wget binutils parallel \
     gvim \
     git \
     systemd systemd-sysvcompat \
