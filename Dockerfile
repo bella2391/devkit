@@ -91,13 +91,12 @@ RUN sudo pacman -Sy --noconfirm \
 # dotfiles
 RUN git clone https://github.com/bella2391/dotfiles.git && \
     cd dotfiles && \
-    # find . -mindepth 1 -maxdepth 1 -exec mv -t ~ {} + && \
     find . -mindepth 1 ! -path "./.config*" -maxdepth 1 -exec mv -t ~ {} + && \
     cd .config && \
     mkdir -p ~/.config/ && \
     find . -mindepth 1 -maxdepth 1 -exec mv -t ~/.config/ {} + && \
     cd ~ && \
-    source ~/.bashrc >> /dev/null
+    git submodule update --init --recursive
 
 # win32yank for wsl
 # RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
