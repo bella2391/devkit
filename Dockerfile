@@ -97,7 +97,6 @@ RUN git clone https://github.com/bella2391/dotfiles.git && \
     mkdir -p ~/.config/ && \
     find . -mindepth 1 -maxdepth 1 -exec mv -t ~/.config/ {} + && \
     cd ~ && \
-    git submodule update --init --recursive && \
     source ~/.bashrc >> /dev/null
 
 # win32yank for wsl
