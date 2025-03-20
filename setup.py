@@ -50,7 +50,7 @@ def import_module():
         print(f"エラーが発生しました: {e}")
     return False
 
-def build_docker_image(env_vars):
+def build_docker_image(env_vars, debug_mode=False):
     """ Docker イメージをビルド """
     container_name = f"devkit_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
@@ -60,18 +60,43 @@ def build_docker_image(env_vars):
         if not module_check:
             return
 
+        # generate Dockerfile
+        with open("Dockerfile", "r") as f:
+            dockerfile_content = f.read()
+
+        if debug_mode:
+            dockerfile_content += r"""
+USER root
+
+RUN mkdir -p /etc/systemd/system/getty@tty1.service.d && \
+    echo "[Service]\nExecStart=\nExecStart=-/sbin/agetty --noclear %I \$TERM" > /etc/systemd/system/getty@tty1.service.d/override.conf
+
+RUN pacman -Sy --noconfirm systemd-sysvcompat
+
+ENV container=docker
+
+STOPSIGNAL SIGRTMIN+3
+CMD ["/usr/lib/systemd/systemd"]
+"""
+
+        with open("Dockerfile.generated", "w") as f:
+            f.write(dockerfile_content)
+
         try:
             subprocess.run([
                 "docker", "build",
                 "--build-arg", f"DOCKER_USER={env_vars['DOCKER_USER']}",
                 "--build-arg", f"DOCKER_USER_PASSWD={env_vars['DOCKER_USER_PASSWD']}",
                 "--build-arg", f"DOCKER_GROUP={env_vars['DOCKER_GROUP']}",
+                "-f", "Dockerfile.generated",
                 "-t", container_name, "."
             ], check=True)
             print(f"Dockerイメージ '{container_name}' のビルドが完了しました。")
             return container_name
         except subprocess.CalledProcessError as e:
             print(f"エラーが発生しました: {e}")
+        finally:
+            os.remove("Dockerfile.generated")
     return None
 
 def run_docker_container_with_tty(container_name, env_vars):
@@ -98,14 +123,21 @@ def run_docker_container_with_tty(container_name, env_vars):
 
 def animated_message(stop_event):
     i = 1
+    last_print_time = time.time()
+
     while not stop_event.is_set():
         if stop_event.is_set():
             break
 
-        print(f"\rwslファイルを作成中です {' '.join('.' * i)}", end="", flush=True)
-        i += 1
-        time.sleep(0.5)  # 0.5秒ごとに更新
-    print("\rwslファイルの作成が完了しました。         ")
+        current_time = time.time()
+        if current_time - last_print_time >= 1:
+            print(f"\rwslファイルを作成中です {' '.join('.' * i)}", end="", flush=True)
+            last_print_time = current_time
+            i += 1
+
+        time.sleep(0.1)
+
+    print("\rwslファイルの作成が完了しました。          ")
 
 def export_wsl(container_name, env_vars):
     """Dockerコマンドを実行する関数"""
@@ -170,7 +202,7 @@ if __name__ == "__main__":
         if not env_vars:
             env_vars = prompt_env({})
 
-        container_name = build_docker_image(env_vars)
+        container_name = build_docker_image(env_vars, args.debug)
 
         if args.debug:
             run_docker_container_with_tty(container_name, env_vars)

@@ -4,3 +4,4 @@
 *.vhdx
 *.copy
 *.wsl
+*.generated

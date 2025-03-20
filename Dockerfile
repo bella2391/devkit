@@ -26,7 +26,7 @@ RUN pacman-key --init >> /dev/null && \
     gzip unzip zip tree which less wget binutils parallel \
     gvim \
     git \
-    systemd systemd-sysvcompat \
+    systemd \
     && \
     pacman -Scc
 
@@ -48,9 +48,6 @@ RUN echo "${DOCKER_USER}:${DOCKER_USER_PASSWD}" | chpasswd
 RUN echo "${DOCKER_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN mkdir -p /home/${DOCKER_USER}/work
 RUN chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
-
-RUN mkdir -p /etc/systemd/system/getty@tty1.service.d && \
-    echo "[Service]\nExecStart=\nExecStart=-/sbin/agetty --noclear %I \$TERM" > /etc/systemd/system/getty@tty1.service.d/override.conf
 
 # WSL2
 WORKDIR /app
@@ -147,11 +144,4 @@ RUN git clone https://github.com/bella2391/dotfiles.git && \
 #     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
 #     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
 #     nvm install 22.12.0
-
-USER root
-
-ENV container=docker
-
-STOPSIGNAL SIGRTMIN+3
-CMD ["/usr/lib/systemd/systemd"]
 
