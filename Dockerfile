@@ -11,8 +11,9 @@ ENV DOCKER_USER=${DOCKER_USER}
 ENV DOCKER_USER_PASSWD=${DOCKER_USER_PASSWD}
 ENV DOCKER_GROUP=${DOCKER_GROUP}
 
-RUN curl -s "https://archlinux.org/mirrorlist/?country=JP" | sed -e 's/^#Server/Server/' >> /etc/pacman.d/mirrorlist
-RUN sed -i '/^#Server = https:\/\/.*\.jp\/.*$/s/^#//' /etc/pacman.d/mirrorlist
+RUN curl -s "https://archlinux.org/mirrorlist/?country=JP" | sed -e 's/^#Server/Server/' >> /etc/pacman.d/mirrorlist && \
+    sed -i '/^#Server = https:\/\/.*\.jp\/.*$/s/^#//' /etc/pacman.d/mirrorlist && \
+    sed -i -e 's|^\(NoExtract *= *usr/share/man/\)|#\1|' /etc/pacman.conf
 
 RUN pacman-key --init >> /dev/null && \
     pacman -Syyu --noconfirm && \
@@ -72,8 +73,8 @@ RUN pacman -Sy --noconfirm dos2unix && \
 USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
-RUN sudo pacman -Sy --noconfirm \
-    kitty imagemagick starship w3m lazygit neovim firefox
+# RUN sudo pacman -Sy --noconfirm \
+#     kitty imagemagick starship w3m lazygit neovim firefox
 
 # yay
 # RUN sudo pacman -Sy --noconfirm go && \
@@ -141,11 +142,11 @@ RUN git clone https://github.com/bella2391/dotfiles.git && \
 #     coursier install metals
 
 # nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash && \
-    export NVM_DIR="$HOME/.nvm" && \
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
-    nvm install 22.12.0
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash && \
+#     export NVM_DIR="$HOME/.nvm" && \
+#     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
+#     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
+#     nvm install 22.12.0
 
 USER root
 
