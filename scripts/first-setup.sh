@@ -2,6 +2,7 @@
 
 set -ue
 
+rm /.dockerenv
 echo "Hello, Devkit!"
 echo -e "\nGenerating pacman lsign key..." && pacman-key --init 2> /dev/null && echo "Done"
 
