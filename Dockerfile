@@ -80,7 +80,13 @@ USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
-    kitty starship w3m lazygit tree unzip neovim
+    tree unzip
+# win32yank for wsl
+RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
+    unzip win32yank-x64.zip -d ~/.global/bin/ && \
+    rm ~/.global/bin/README.md ~/.global/bin/LICENSE && \
+    chmod +x ~/.global/bin/win32yank.exe
+
 # rustup/cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
