@@ -81,6 +81,14 @@ WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
     kitty starship w3m lazygit tree unzip neovim
+# rustup/cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# pyenv
+RUN curl https://pyenv.run | bash && \
+    pyenv install 3.13.2 && \
+    pyenv global 3.13.2
+
 USER root
 
 ENV container=docker
