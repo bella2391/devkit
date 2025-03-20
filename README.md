@@ -11,6 +11,8 @@
 ### Install
 ```
 $ python setup.py
+# Windows
+$ wsl -d devkit
 ```
 ### Debug
 enter docker container
