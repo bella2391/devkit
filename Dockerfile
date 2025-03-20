@@ -75,18 +75,31 @@ USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
-    kitty imagemagick starship w3m lazygit tree unzip neovim \
-    git-credential-manager-core-extras firefox
+    kitty imagemagick starship w3m lazygit neovim firefox
 
 # yay
-RUN git clone https://aur.archlinux.org/yay.git && \
+RUN sudo pacman -Sy --noconfirm go && \
+    git clone https://aur.archlinux.org/yay.git && \
     cd yay && \
-    makepkg -si
+    makepkg --noconfirm -si && \
+    yay -Syyu --noconfirm
 
 # fonts
-RUN https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Agave.zip && \
+RUN mkdir -p ~/.local/share/fonts && \
+    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Agave.zip && \
     unzip Agave.zip -d ~/.local/share/fonts/ && \
     fc-cache -fv
+
+# dotfiles
+RUN git clone https://github.com/bella2391/dotfiles.git && \
+    cd dotfiles && \
+    # find . -mindepth 1 -maxdepth 1 -exec mv -t ~ {} + && \
+    find . -mindepth 1 ! -path "./.config*" -maxdepth 1 -exec mv -t ~ {} + && \
+    cd .config && \
+    find . -mindepth 1 -maxdepth 1 -exec mv -t ~/.config/ {} + && \
+    cd ~ && \
+    git submodule update --init --recursive && \
+    source ~/.bashrc >> /dev/null
 
 # win32yank for wsl
 RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
@@ -94,20 +107,12 @@ RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32ya
     rm ~/.global/bin/README.md ~/.global/bin/LICENSE && \
     chmod +x ~/.global/bin/win32yank.exe
 
-# dotfiles
-RUN git clone https://github.com/bella2391/dotfiles.git && \
-    cd dotfiles && \
-    find . -mindepth 1 -maxdepth 1 -exec mv -t ~ {} + && \
-    cd ~ && \
-    git submodule update --init --recursive && \
-    source ~/.bashrc >> /dev/null
-
 # rustup/cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y >> /dev/null 2>&1
 
 # pyenv
 RUN sudo pacman -Sy --noconfirm tk && \
-    curl https://pyenv.run | bash >> /dev/null 2>&1 && \
+    curl -fsSL https://pyenv.run | bash >> /dev/null 2>&1 && \
     pyenv install 3.13.2 >> /dev/null 2>&1 && \
     pyenv global 3.13.2
 
@@ -123,8 +128,7 @@ RUN mkdir -p ~/git/ && \
     parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
 
 # github-credential-manager
-RUN sudo pacman -Sy --noconfirm \
-    git-credential-manager-core-extras && \
+RUN yay -S --noconfirm git-credential-manager-core-extras && \
     git config --global credential.helper 'manager' && \
     git config --global credential.credentialStore secretservice
 
@@ -133,7 +137,7 @@ RUN curl -s "https://get.sdkman.io" | bash && \
     sdk install java $(sdk list java | grep -o "\b8\.[0-9]*\.[0-9]*\-tem" | head -1) && \
     sdk install sbt && \
     # sdk install java 17.0.12-oracle && \
-    yay -S coursier && \
+    yay -S --noconfirm coursier && \
     cs install metals
 
 USER root
