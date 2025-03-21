@@ -34,6 +34,11 @@ if [[ "$setup_github" == "y" ]]; then
   # sudo -u "$user" git config --global user.email "$email"
   # sudo -u "$user" git config --global user.name "$name"
 
+  if [ ! -d "/run/user/1000/" ]; then
+    sudo -u "$user" mkdir -p /run/user/1000/
+    echo "\[$(date '+%Y-%m-%d %H:%M:%S')\] CREATED /run/user/1000/ FROM FIRST-SETUP" >> $HOME/.wsl.log
+  fi
+
   if [ ! -L /run/user/1000/wayland-0 ]; then
     if [ -d /mnt/wslg/runtime-dir ]; then
       sudo -u "$user" ln -s /mnt/wslg/runtime-dir/wayland-0* /run/user/1000/
