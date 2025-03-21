@@ -8,8 +8,6 @@ From devkit,
     Hello, ${user}!
 EOF
 
-rm /.dockerenv
-echo -e "\nGenerating pacman lsign key..." && pacman-key --init 2> /dev/null && echo "Done"
 if [ -f "/.dockerenv" ]; then
     rm /.dockerenv
 fi
