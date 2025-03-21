@@ -50,7 +50,7 @@ def import_module():
         print(f"エラーが発生しました: {e}")
     return False
 
-def build_docker_image(env_vars, debug_mode=False):
+def build_docker_image(env_vars, debug_mode=False, no_cache=False):
     """ Docker イメージをビルド """
     container_name = f"devkit_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
@@ -82,15 +82,20 @@ CMD ["/usr/lib/systemd/systemd"]
         with open("Dockerfile.generated", "w") as f:
             f.write(dockerfile_content)
 
-        try:
-            subprocess.run([
+        docker_build_command = [
                 "docker", "build",
                 "--build-arg", f"DOCKER_USER={env_vars['DOCKER_USER']}",
                 "--build-arg", f"DOCKER_USER_PASSWD={env_vars['DOCKER_USER_PASSWD']}",
                 "--build-arg", f"DOCKER_GROUP={env_vars['DOCKER_GROUP']}",
                 "-f", "Dockerfile.generated",
                 "-t", container_name, "."
-            ], check=True)
+        ]
+
+        if no_cache:
+            docker_build_command.append("--no-cache")
+
+        try:
+            subprocess.run(docker_build_command, check=True)
             print(f"Dockerイメージ '{container_name}' のビルドが完了しました。")
             return container_name
         except subprocess.CalledProcessError as e:
@@ -198,6 +203,7 @@ def export_wsl(container_name, env_vars):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Docker環境セットアップスクリプト")
     parser.add_argument("--debug", action="store_true", help="デバッグモードを有効化")
+    parser.add_argument("--no-cache", action="store_true", help="キャッシュを使用せずにビルド")
     args = parser.parse_args()
 
     try:
@@ -208,7 +214,7 @@ if __name__ == "__main__":
         if not env_vars:
             env_vars = prompt_env({})
 
-        container_name = build_docker_image(env_vars, args.debug)
+        container_name = build_docker_image(env_vars, args.debug, args.no_cache)
 
         if args.debug:
             run_docker_container_with_tty(container_name, env_vars)
