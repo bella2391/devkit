@@ -2,8 +2,13 @@
 
 set -ue
 
+user="${DOCKER_USER}"
+cat <<EOF
+From devkit,
+    Hello, ${user}!
+EOF
+
 rm /.dockerenv
-echo "Hello, Devkit!"
 echo -e "\nGenerating pacman lsign key..." && pacman-key --init 2> /dev/null && echo "Done"
 
 # See https://gitlab.archlinux.org/archlinux/archlinux-wsl/-/issues/3

@@ -56,6 +56,7 @@ COPY . /app/
 RUN pacman -Sy --noconfirm dos2unix && \
     find config scripts -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; >> /dev/null 2>&1 && \
     sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" config/wsl.conf && \
+    sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" scripts/first-setup.sh && \
     chmod 644 config/wsl.conf && \
     chmod 644 config/wsl-distribution.conf && \
     chmod +x scripts/first-setup.sh && \
