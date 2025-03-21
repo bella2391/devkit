@@ -137,6 +137,8 @@ def animated_message(stop_event):
             print(f"\rMaking wsl file {' '.join('.' * i)}", end="", flush=True)
             last_print_time = current_time
             i += 1
+            if i > 5: # ピリオドの数が5を超えたらリセット
+                i = 1
 
         time.sleep(0.1)
 
