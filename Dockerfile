@@ -42,12 +42,12 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
 # user
 RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/group; then \
         groupadd "${DOCKER_GROUP}"; \
-    fi
-RUN useradd -m -s /bin/bash -u ${DOCKER_USER_ID} -G ${DOCKER_GROUP} ${DOCKER_USER}
-RUN echo "${DOCKER_USER}:${DOCKER_USER_PASSWD}" | chpasswd
-RUN echo "${DOCKER_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN mkdir -p /home/${DOCKER_USER}/work
-RUN chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
+    fi && \
+    useradd -m -s /bin/bash -u ${DOCKER_USER_ID} -G ${DOCKER_GROUP} ${DOCKER_USER} && \
+    echo "${DOCKER_USER}:${DOCKER_USER_PASSWD}" | chpasswd && \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    mkdir -p /home/${DOCKER_USER}/work && \
+    chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
 
 # WSL2
 WORKDIR /app
