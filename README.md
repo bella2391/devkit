@@ -11,7 +11,7 @@
 ```
 usage: setup.py [-h] [--install] [--debug] [--no-cache] [--y] [--set-env]
 
-Script for setup of docker environment
+Script for setup of WSL environment with docker
 
 options:
   -h, --help  show this help message and exit
