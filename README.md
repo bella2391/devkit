@@ -14,10 +14,10 @@ $ python setup.py
 # Windows
 $ wsl -d devkit
 ```
-### Debug
-enter docker container
+### About setup.py
+-- Flags
 ```
-$ python setup.py --debug
+$ python setup.py [--debug] [--no-cache] [--y]
 ```
 
 ## License
