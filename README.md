@@ -15,7 +15,7 @@ $ python setup.py
 $ wsl -d devkit
 ```
 ### About setup.py
--- Flags
+- Command Flags
 ```
 $ python setup.py [--debug] [--no-cache] [--y]
 ```
