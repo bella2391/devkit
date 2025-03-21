@@ -124,11 +124,6 @@ RUN git clone https://github.com/bella2391/dotfiles.git && \
 #     cd Learning && \
 #     parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
 
-# github-credential-manager
-# RUN yay -S --noconfirm git-credential-manager-core-extras && \
-#     git config --global credential.helper 'manager' && \
-#     git config --global credential.credentialStore secretservice
-
 # scala
 # RUN curl -s "https://get.sdkman.io" | bash && \
 #     source ~/.sdkman/bin/sdkman-init.sh && \
