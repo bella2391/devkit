@@ -8,16 +8,8 @@
 * Python
 
 ## Setup
-### Install
 ```
-$ python setup.py
-# Windows
-$ wsl -d devkit
-```
-### About setup.py
-- Command Flags
-```
-$ python setup.py [--debug] [--no-cache] [--y]
+$ python setup.py [--install] [--debug] [--no-cache] [--y] [--set-env]
 ```
 
 ## License

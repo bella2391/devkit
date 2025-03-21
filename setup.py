@@ -233,16 +233,12 @@ if __name__ == "__main__":
             export_wsl(container_name, env_vars, args.y)
         else:
             print("""
---install
-  Install: Build & Export *.wsl & Import into WSL
---debug
-  Enable debug mode: Build & Run container & Enter it with tty
---no-cache
-  Build with no cache
---y 
-  Response bu default value for all prompts
---set-env
-  Set environment variable, saving into .env
+Flags:
+    --install     Install: Build & Export *.wsl & Import into WSL
+    --debug       Enable debug mode: Build & Run container & Enter it with tty
+    --no-cache    Build with no cache
+    --y           Response bu default value for all prompts
+    --set-env     Set environment variable, saving into .env
 """)
     except KeyboardInterrupt:
         print("\nOperation is canceled.")
