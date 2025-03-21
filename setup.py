@@ -177,11 +177,17 @@ def export_wsl(container_name, env_vars):
         else:
             print(f"{container_name}.wsl のインポートをスキップしました。")
 
-        remove_confirmation = input_with_default("既存のコンテナを削除しますか？", "Y").upper()
-        if remove_confirmation == "Y":
+        rm_container_confirmation = input_with_default("既存のコンテナを削除しますか？", "Y").upper()
+        if rm_container_confirmation == "Y":
             subprocess.run(["docker", "stop", container_name], check=True)
             subprocess.run(["docker", "rm", container_name], check=True)
             print(f"コンテナ '{container_name}' を削除しました。")
+            rm_image_confirmation = input_with_default("既存イメージも削除しますか？", "Y").upper()
+            if rm_image_confirmation == "Y":
+                subprocess.run(["docker", "rmi", container_name], check=True)
+                print(f"イメージ '{container_name}' を削除しました。")
+            else:
+                print(f"イメージ '{container_name}' の削除をスキップしました。")
         else:
             print(f"コンテナ '{container_name}' の削除をスキップしました。")
 
