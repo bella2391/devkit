@@ -27,19 +27,20 @@ RUN pacman-key --init >> /dev/null && \
     gvim \
     git \
     systemd \
+    systemd-sysvcompat \
     && \
     pacman -Scc
 
-# locale
+# Locale
 RUN echo LANG=en_US.UTF-8 > /etc/locale.conf && \
     echo "en_US.UTF-8 UTF-8" | tee -a /etc/locale.gen && \
     locale-gen
 
-# timezone
+# Timezone
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     echo "Asia/Tokyo" > /etc/timezone
 
-# user
+# User
 RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/group; then \
         groupadd "${DOCKER_GROUP}"; \
     fi && \
@@ -74,6 +75,19 @@ WORKDIR /home/${DOCKER_USER}/work
 # RUN sudo pacman -Sy --noconfirm \
 #     kitty imagemagick starship w3m lazygit neovim firefox
 
+RUN sudo pacman -Sy --noconfirm \
+    starship lazygit firefox
+
+# dotfiles
+RUN git clone https://github.com/bella2391/dotfiles.git && \
+    cd dotfiles && \
+    find . -mindepth 1 ! -path "./.config*" -maxdepth 1 -exec mv -t ~ {} + && \
+    cd .config && \
+    mkdir -p ~/.config/ && \
+    find . -mindepth 1 -maxdepth 1 -exec mv -t ~/.config/ {} + && \
+    cd ~ && \
+    git submodule update --init --recursive
+
 # yay
 # RUN sudo pacman -Sy --noconfirm go && \
 #     git clone https://aur.archlinux.org/yay.git && \
@@ -86,16 +100,6 @@ WORKDIR /home/${DOCKER_USER}/work
 #     wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Agave.zip && \
 #     unzip Agave.zip -d ~/.local/share/fonts/ && \
 #     fc-cache -fv
-
-# dotfiles
-RUN git clone https://github.com/bella2391/dotfiles.git && \
-    cd dotfiles && \
-    find . -mindepth 1 ! -path "./.config*" -maxdepth 1 -exec mv -t ~ {} + && \
-    cd .config && \
-    mkdir -p ~/.config/ && \
-    find . -mindepth 1 -maxdepth 1 -exec mv -t ~/.config/ {} + && \
-    cd ~ && \
-    git submodule update --init --recursive
 
 # win32yank for wsl
 # RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
