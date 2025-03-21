@@ -5,6 +5,7 @@ import threading
 import itertools
 import time
 from datetime import datetime
+import sys
 
 env_file = ".env"
 
@@ -39,6 +40,12 @@ def prompt_env(env_vars, force_default=False):
             f.write(f"{key}={value}\n")
 
     print(f"Environment variables saved to {env_file}")
+    return env_vars
+
+def ensure_env_vars(force_default=False):
+    env_vars = load_env()
+    if not env_vars:
+        env_vars = prompt_env(env_vars, force_default)
     return env_vars
 
 def import_module():
@@ -200,9 +207,9 @@ def export_wsl(container_name, env_vars, force_default=False):
         print("\nOperation of exporting wsl file is canceled.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script for setup of docker environment")
+    parser = argparse.ArgumentParser(description="Script for setup of WSL environment with docker")
     parser.add_argument("--install", action="store_true", help="Install: Build & Export *.wsl & Import into WSL")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode: Build & Run container & Enter it with tty")
     parser.add_argument("--no-cache", action="store_true", help="Build with no cache")
     parser.add_argument("--y", action="store_true", help="Response by default value for all prompts")
     parser.add_argument("--set-env", action="store_true", help="Set environment variable, saving into .env")
@@ -212,22 +219,25 @@ if __name__ == "__main__":
         if args.debug:
             print("=== Enabled Debug Mode ===")
 
-        if args.set_env:
+        if len(sys.argv) == 1:
+            parser.print_help()
+        elif args.set_env:
             env_vars = load_env()
-            if not env_vars:
+            if env_vars:
+                set_again_confirmation = input_with_default(f"Detected .env in current directory.\nDo you try to set again? (require deleting .env)", "y", args.y).lower()
+                if set_again_confirmation == "y":
+                    os.remove(".env")
+                    env_vars = prompt_env({}, args.y)
+                else:
+                    print("Setting environment variables skipped.") 
+            else:
                 env_vars = prompt_env({})
         elif args.debug:
-            env_vars = load_env()
-            if not env_vars:
-                env_vars = prompt_env({})
-
+            env_vars = ensure_env_vars(args.y)
             container_name = build_docker_image(env_vars, args.debug, args.no_cache, args.y)
             run_docker_container_with_tty(container_name, env_vars, args.y)
         elif args.install:
-            env_vars = load_env()
-            if not env_vars:
-                env_vars = prompt_env({})
-
+            env_vars = ensure_env_vars(args.y)
             container_name = build_docker_image(env_vars, args.debug, args.no_cache, args.y)
             export_wsl(container_name, env_vars, args.y)
     except KeyboardInterrupt:
