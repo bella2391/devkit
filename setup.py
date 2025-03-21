@@ -94,6 +94,7 @@ CMD ["/usr/lib/systemd/systemd"]
             docker_build_command.append("--no-cache")
 
         try:
+            print("Starting build image...")
             subprocess.run(docker_build_command, check=True)
             print(f"Completely build image: '{container_name}' done.")
             return container_name
