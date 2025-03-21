@@ -11,7 +11,7 @@ env_file = ".env"
 def input_with_default(prompt, default, force_default=False):
     if force_default:
         return default
-    user_input = input(f"{prompt} (default: {default}): ").strip()
+    user_input = input(f"{prompt} (default: {default}): ").strip().lower()
     return user_input if user_input else default
 
 def load_env():
@@ -53,8 +53,8 @@ def import_module():
 def build_docker_image(env_vars, debug_mode=False, no_cache=False, force_default=False):
     container_name = f"devkit_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-    build_confirmation = input_with_default(f"Do you build image? (name: '{container_name}')", "Y", force_default).upper()
-    if build_confirmation == "Y":
+    build_confirmation = input_with_default(f"Do you build image? (name: '{container_name}')", "y", force_default).lower()
+    if build_confirmation == "y":
         module_check = import_module()
         if not module_check:
             return
@@ -109,8 +109,8 @@ def run_docker_container_with_tty(container_name, env_vars, force_default=False)
         print("Running container skipped. (detected an unamed container name)")
         return
 
-    run_confirmation = input_with_default(f"Do you run docker container? (name: '{container_name})", "Y", force_default).upper()
-    if run_confirmation == "Y":
+    run_confirmation = input_with_default(f"Do you run docker container? (name: '{container_name})", "y", force_default).lower()
+    if run_confirmation == "y":
         try:
             subprocess.run([
                 "docker", "run", "--rm", "--privileged",
@@ -146,8 +146,8 @@ def animated_message(stop_event):
     print("\rMaking wsl file done.          ")
 
 def export_wsl(container_name, env_vars, force_default=False):
-    export_confirmation = input_with_default(f"Do you make wsl file in order to import into wsl? (name: '{container_name}')", "Y", force_default).upper()
-    if export_confirmation == "Y":
+    export_confirmation = input_with_default(f"Do you make wsl file in order to import into wsl? (name: '{container_name}')", "y", force_default).lower()
+    if export_confirmation == "y":
         subprocess.run([
             "docker", "run", "-d", "--name", container_name, "--privileged",
             "-e", f"DOCKER_USER={env_vars['DOCKER_USER']}",
@@ -175,20 +175,20 @@ def export_wsl(container_name, env_vars, force_default=False):
 
         print(f"Placed at '{wsl_file_path}'.")
 
-        exec_confirmation = input_with_default("Do you import wsl file into wsl? (for Windows)", "Y", force_default).upper()
-        if exec_confirmation == "Y":
+        exec_confirmation = input_with_default("Do you import wsl file into wsl? (for Windows)", "y", force_default).lower()
+        if exec_confirmation == "y":
             print(f"Starting import '{container_name}'.")
             subprocess.run(["wsl", "--install", "--from-file", wsl_file_path], check=True)
         else:
             print(f"Import of '{container_name}.wsl' skipped.")
 
-        rm_container_confirmation = input_with_default("Do you delete current working container?", "Y", force_default).upper()
-        if rm_container_confirmation == "Y":
+        rm_container_confirmation = input_with_default("Do you delete current working container?", "y", force_default).lower()
+        if rm_container_confirmation == "y":
             subprocess.run(["docker", "stop", container_name], check=True)
             subprocess.run(["docker", "rm", container_name], check=True)
             print(f"Container deleted. (name: '{container_name}')")
-            rm_image_confirmation = input_with_default("Do you also delete current working image?", "Y", force_default).upper()
-            if rm_image_confirmation == "Y":
+            rm_image_confirmation = input_with_default("Do you also delete current working image?", "y", force_default).lower()
+            if rm_image_confirmation == "y":
                 subprocess.run(["docker", "rmi", container_name], check=True)
                 print(f"Image deleted. (name: '{container_name}')")
             else:
