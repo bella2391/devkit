@@ -202,25 +202,48 @@ def export_wsl(container_name, env_vars, force_default=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for setup of docker environment")
+    parser.add_argument("--install", action="store_true", help="Install: Build & Export *.wsl & Import into WSL")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument("--no-cache", action="store_true", help="Build with no cache")
     parser.add_argument("--y", action="store_true", help="Response by default value for all prompts")
+    parser.add_argument("--set-env", action="store_true", help="Set environment variable, saving into .env")
     args = parser.parse_args()
 
     try:
         if args.debug:
             print("=== Enabled Debug Mode ===")
 
-        env_vars = load_env()
-        if not env_vars:
-            env_vars = prompt_env({})
+        if args.set_env:
+            env_vars = load_env()
+            if not env_vars:
+                env_vars = prompt_env({})
+        elif args.debug:
+            env_vars = load_env()
+            if not env_vars:
+                env_vars = prompt_env({})
 
-        container_name = build_docker_image(env_vars, args.debug, args.no_cache, args.y)
-
-        if args.debug:
+            container_name = build_docker_image(env_vars, args.debug, args.no_cache, args.y)
             run_docker_container_with_tty(container_name, env_vars, args.y)
-        else:
+        elif args.install:
+            env_vars = load_env()
+            if not env_vars:
+                env_vars = prompt_env({})
+
+            container_name = build_docker_image(env_vars, args.debug, args.no_cache, args.y)
             export_wsl(container_name, env_vars, args.y)
+        else:
+            print("""
+--install
+  Install: Build & Export *.wsl & Import into WSL
+--debug
+  Enable debug mode: Build & Run container & Enter it with tty
+--no-cache
+  Build with no cache
+--y 
+  Response bu default value for all prompts
+--set-env
+  Set environment variable, saving into .env
+""")
     except KeyboardInterrupt:
         print("\nOperation is canceled.")
 
