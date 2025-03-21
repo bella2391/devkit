@@ -8,12 +8,13 @@ from datetime import datetime
 
 env_file = ".env"
 
-def input_with_default(prompt, default):
-    user_input = input(f"{prompt} (デフォルト: {default}): ").strip()
+def input_with_default(prompt, default, force_default=False):
+    if force_default:
+        return default
+    user_input = input(f"{prompt} (default: {default}): ").strip()
     return user_input if user_input else default
 
 def load_env():
-    """ .env ファイルを読み込む """
     env_vars = {}
     if os.path.exists(env_file):
         with open(env_file, "r") as f:
@@ -24,15 +25,14 @@ def load_env():
                     env_vars[key] = value
     return env_vars
 
-def prompt_env(env_vars):
+def prompt_env(env_vars, force_default=False):
     default_user = "user"
     default_user_password = default_user
     default_group = "users"
 
-    """ 環境変数を対話形式で取得 """
-    env_vars["DOCKER_USER"] = input(f"Enter Docker username (default: {env_vars.get('DOCKER_USER', default_user)}): ") or env_vars.get("DOCKER_USER", default_user)
-    env_vars["DOCKER_USER_PASSWD"] = input(f"Enter Docker user password (default: {env_vars.get('DOCKER_USER_PASSWD', default_user_password)}): ") or env_vars.get("DOCKER_USER_PASSWD", default_user_password)
-    env_vars["DOCKER_GROUP"] = input(f"Enter Docker group (default: {env_vars.get('DOCKER_GROUP', default_group)}): ") or env_vars.get("DOCKER_GROUP", default_group)
+    env_vars["DOCKER_USER"] = input_with_default("Enter Docker username", env_vars.get("DOCKER_USER") or default_user, force_default)
+    env_vars["DOCKER_USER_PASSWD"] = input_with_default("Enter Docker user password", env_vars.get("DOCKER_USER_PASSWD") or default_user_password, force_default)
+    env_vars["DOCKER_GROUP"] = input_with_default("Enter Docker group", env_vars.get("DOCKER_GROUP") or default_group, force_default)
 
     with open(env_file, "w") as f:
         for key, value in env_vars.items():
@@ -42,19 +42,18 @@ def prompt_env(env_vars):
     return env_vars
 
 def import_module():
-    print("ビルドに必要なファイルをダウンロードします。")
+    print("Downloading files for build...")
     try:
         subprocess.run(["git", "submodule", "update", "--init", "--recursive"], check=True)
         return True
     except subprocess.CalledProcessError as e:
-        print(f"エラーが発生しました: {e}")
+        print(f"An error occurred: {e}")
     return False
 
-def build_docker_image(env_vars, debug_mode=False, no_cache=False):
-    """ Docker イメージをビルド """
+def build_docker_image(env_vars, debug_mode=False, no_cache=False, force_default=False):
     container_name = f"devkit_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-    build_confirmation = input_with_default(f"Dockerイメージ '{container_name}' をビルドしますか？", "Y").upper()
+    build_confirmation = input_with_default(f"Do you build image? (name: '{container_name}')", "Y", force_default).upper()
     if build_confirmation == "Y":
         module_check = import_module()
         if not module_check:
@@ -96,21 +95,20 @@ CMD ["/usr/lib/systemd/systemd"]
 
         try:
             subprocess.run(docker_build_command, check=True)
-            print(f"Dockerイメージ '{container_name}' のビルドが完了しました。")
+            print(f"Completely build image: '{container_name}' done.")
             return container_name
         except subprocess.CalledProcessError as e:
-            print(f"エラーが発生しました: {e}")
+            print(f"An error occurred: {e}")
         finally:
             os.remove("Dockerfile.generated")
     return None
 
-def run_docker_container_with_tty(container_name, env_vars):
-    """ Docker コンテナを実行 """
+def run_docker_container_with_tty(container_name, env_vars, force_default=False):
     if not container_name:
-        print("コンテナ名が不明なため、実行をスキップします。")
+        print("Running container skipped. (detected an unamed container name)")
         return
 
-    run_confirmation = input_with_default(f"Dockerコンテナ '{container_name}' を実行しますか？", "Y").upper()
+    run_confirmation = input_with_default(f"Do you run docker container? (name: '{container_name})", "Y", force_default).upper()
     if run_confirmation == "Y":
         try:
             subprocess.run([
@@ -122,9 +120,9 @@ def run_docker_container_with_tty(container_name, env_vars):
                 container_name
             ], check=True)
         except subprocess.CalledProcessError as e:
-            print(f"エラーが発生しました: {e}")
+            print(f"An error occurred: {e}")
     else:
-        print("Dockerコンテナの実行をスキップします。")
+        print("Running container skipped.")
 
 def animated_message(stop_event):
     i = 1
@@ -136,17 +134,16 @@ def animated_message(stop_event):
 
         current_time = time.time()
         if current_time - last_print_time >= 1:
-            print(f"\rwslファイルを作成中です {' '.join('.' * i)}", end="", flush=True)
+            print(f"\rMaking wsl file {' '.join('.' * i)}", end="", flush=True)
             last_print_time = current_time
             i += 1
 
         time.sleep(0.1)
 
-    print("\rwslファイルの作成が完了しました。          ")
+    print("\rMaking wsl file done.          ")
 
-def export_wsl(container_name, env_vars):
-    """Dockerコマンドを実行する関数"""
-    export_confirmation = input_with_default(f"WSLでイメージ '{container_name}' をインポートするためのwslファイルを作成しますか？", "Y").upper()
+def export_wsl(container_name, env_vars, force_default=False):
+    export_confirmation = input_with_default(f"Do you make wsl file in order to import into wsl? (name: '{container_name}')", "Y", force_default).upper()
     if export_confirmation == "Y":
         subprocess.run([
             "docker", "run", "-d", "--name", container_name, "--privileged",
@@ -155,9 +152,9 @@ def export_wsl(container_name, env_vars):
             "-e", f"DOCKER_GROUP={env_vars['DOCKER_GROUP']}",
             f"{container_name}:latest"
         ], check=True)
-        print(f"コンテナ '{container_name}' が起動しました。")
+        print(f"Starting container. (name: '{container_name}')")
 
-        export_path = input("wslファイルの出力ディレクトリを指定してください (デフォルト: カレントディレクトリ): ").strip()
+        export_path = input("Enter output directory for wsl file (default: current directory): ").strip()
         if not export_path:
             export_path = os.getcwd()
 
@@ -173,53 +170,54 @@ def export_wsl(container_name, env_vars):
             stop_event.set()
             animation_thread.join()
 
-        print(f"wslファイルを {wsl_file_path} に作成しました。")
+        print(f"Placed at '{wsl_file_path}'.")
 
-        exec_confirmation = input_with_default("WSLにインポートしますか？（Windows用）", "Y").upper()
+        exec_confirmation = input_with_default("Do you import wsl file into wsl? (for Windows)", "Y", force_default).upper()
         if exec_confirmation == "Y":
-            print(f"{container_name}.wsl のインポートを開始します。")
+            print(f"Starting import '{container_name}'.")
             subprocess.run(["wsl", "--install", "--from-file", wsl_file_path], check=True)
         else:
-            print(f"{container_name}.wsl のインポートをスキップしました。")
+            print(f"Import of '{container_name}.wsl' skipped.")
 
-        rm_container_confirmation = input_with_default("既存のコンテナを削除しますか？", "Y").upper()
+        rm_container_confirmation = input_with_default("Do you delete current working container?", "Y", force_default).upper()
         if rm_container_confirmation == "Y":
             subprocess.run(["docker", "stop", container_name], check=True)
             subprocess.run(["docker", "rm", container_name], check=True)
-            print(f"コンテナ '{container_name}' を削除しました。")
-            rm_image_confirmation = input_with_default("既存イメージも削除しますか？", "Y").upper()
+            print(f"Container deleted. (name: '{container_name}')")
+            rm_image_confirmation = input_with_default("Do you also delete current working image?", "Y", force_default).upper()
             if rm_image_confirmation == "Y":
                 subprocess.run(["docker", "rmi", container_name], check=True)
-                print(f"イメージ '{container_name}' を削除しました。")
+                print(f"Image deleted. (name: '{container_name}')")
             else:
-                print(f"イメージ '{container_name}' の削除をスキップしました。")
+                print(f"Deletion of image skipped. (name: '{container_name}')")
         else:
-            print(f"コンテナ '{container_name}' の削除をスキップしました。")
+            print(f"Deletion of container skipped. (name: '{container_name}')")
 
-        print("すべての操作が終了しました。")
+        print("All operation done.")
     else:
-        print("\nwslファイルのエクスポートを中断しました。")
+        print("\nOperation of exporting wsl file is canceled.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Docker環境セットアップスクリプト")
-    parser.add_argument("--debug", action="store_true", help="デバッグモードを有効化")
-    parser.add_argument("--no-cache", action="store_true", help="キャッシュを使用せずにビルド")
+    parser = argparse.ArgumentParser(description="Script for setup of docker environment")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("--no-cache", action="store_true", help="Build with no cache")
+    parser.add_argument("--y", action="store_true", help="Response by default value for all prompts")
     args = parser.parse_args()
 
     try:
         if args.debug:
-            print("=== デバッグモードが有効です。 ===")
+            print("=== Enabled Debug Mode ===")
 
         env_vars = load_env()
         if not env_vars:
             env_vars = prompt_env({})
 
-        container_name = build_docker_image(env_vars, args.debug, args.no_cache)
+        container_name = build_docker_image(env_vars, args.debug, args.no_cache, args.y)
 
         if args.debug:
-            run_docker_container_with_tty(container_name, env_vars)
+            run_docker_container_with_tty(container_name, env_vars, args.y)
         else:
-            export_wsl(container_name, env_vars)
+            export_wsl(container_name, env_vars, args.y)
     except KeyboardInterrupt:
-        print("\n操作を中断しました。")
+        print("\nOperation is canceled.")
 
