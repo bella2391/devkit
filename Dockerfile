@@ -125,13 +125,13 @@ RUN mkdir -p ~/git/ && \
     cd Learning && \
     parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
 
-# java
+# java (using sdkman)
 RUN curl -s "https://get.sdkman.io" | bash && \
     source ~/.sdkman/bin/sdkman-init.sh && \
     export SDKMAN_AUTO_ANSWER=true && \
     if which sdk; then sdk install java 17.0.12-oracle; fi
 
-# scala
+# scala (require sdkman)
 RUN if [ -s "${DOCKER_USER}/.sdkman/bin/sdkman-init.sh" ]; then \
         source ~/.sdkman/bin/sdkman-init.sh && \
         export SDKMAN_AUTO_ANSWER=true && \
@@ -143,7 +143,7 @@ RUN if [ -s "${DOCKER_USER}/.sdkman/bin/sdkman-init.sh" ]; then \
         fi \
     fi
 
-# nvm
+# nvm/npm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash && \
     export NVM_DIR="$HOME/.nvm" && \
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
