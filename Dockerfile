@@ -132,7 +132,7 @@ RUN curl -s "https://get.sdkman.io" | bash && \
     if which sdk; then sdk install java 17.0.12-oracle; fi
 
 # scala (require sdkman)
-RUN if [ -s "${DOCKER_USER}/.sdkman/bin/sdkman-init.sh" ]; then \
+RUN if [ -s "~/.sdkman/bin/sdkman-init.sh" ]; then \
         source ~/.sdkman/bin/sdkman-init.sh && \
         export SDKMAN_AUTO_ANSWER=true && \
         if which sdk; then \
