@@ -135,13 +135,15 @@ RUN curl -s "https://get.sdkman.io" | bash && \
     if which sdk; then sdk install java 17.0.12-oracle; fi
 
 # scala
-RUN if which sdk; then \
+RUN if [ -s "${DOCKER_USER}/.sdkman/bin/sdkman-init.sh" ]; then \
         source ~/.sdkman/bin/sdkman-init.sh && \
         export SDKMAN_AUTO_ANSWER=true && \
-        sdk install sbt && \
-        yay -S --noconfirm coursier && \
-        coursier setup -y && \
-        coursier install metals; \
+        if which sdk; then \
+            sdk install sbt && \
+            yay -S --noconfirm coursier && \
+            coursier setup -y && \
+            coursier install metals; \
+        fi \
     fi
 
 # nvm
