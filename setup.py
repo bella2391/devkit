@@ -97,6 +97,7 @@ CMD ["/usr/lib/systemd/systemd"]
         ]
 
         if no_cache:
+            print("Detected using no-cache flag.")
             docker_build_command.append("--no-cache")
 
         try:
