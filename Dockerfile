@@ -117,13 +117,6 @@ RUN sudo pacman -Sy --noconfirm tk pyenv && \
     pyenv install 3.13.2 >> /dev/null 2>&1 && \
     pyenv global 3.13.2
 
-# import bella, my repositories
-RUN mkdir -p ~/git/ && \
-    cd ~/git/ && \
-    parallel 'git clone https://github.com/bella2391/{}.git' ::: FMC FMCWebApp && \
-    mkdir -p Learning && \
-    cd Learning && \
-    parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
 
 # java (using sdkman)
 RUN curl -s "https://get.sdkman.io" | bash && \
