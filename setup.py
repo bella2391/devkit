@@ -106,7 +106,12 @@ CMD ["/usr/lib/systemd/systemd"]
             print(f"Completely build image: '{container_name}' done.")
             return container_name
         except subprocess.CalledProcessError as e:
-            print(f"An error occurred: {e}")
+            if "connect" in str(e):
+                print(f"Failed to connect docker engine.\nPlease check whether docker engine starting or not.")
+                exit(1)
+            else:
+                print(f"An error occurred: {e}")
+                exit(1)
         finally:
             os.remove("Dockerfile.generated")
     return None
