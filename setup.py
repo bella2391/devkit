@@ -203,6 +203,13 @@ def export_wsl(container_name, env_vars, force_default=False):
         else:
             print(f"Deletion of container skipped. (name: '{container_name}')")
 
+        rm_wsl_file_confirmation = input_with_default(f"Do you delete wsl file? (name: '{container_name}.wsl')", "y", force_default).lower()
+
+        if rm_wsl_file_confirmation == "y":
+            os.remove(wsl_file_path)
+        else:
+            print(f"Deletion of '{container_name}.wsl' skipped.")
+
         print("All operation done.")
     else:
         print("\nOperation of exporting wsl file is canceled.")
