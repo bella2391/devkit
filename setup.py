@@ -221,10 +221,10 @@ def export_wsl(container_name, env_vars, force_default=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for setup of WSL environment with docker")
-    parser.add_argument("--install", action="store_true", help="Install: Build & Export *.wsl & Import into WSL")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode: Build & Run container & Enter it with tty")
+    parser.add_argument("-i", "--install", action="store_true", help="Install: Build & Export *.wsl & Import into WSL")
+    parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode: Build & Run container & Enter it with tty")
     parser.add_argument("--no-cache", action="store_true", help="Build with no cache")
-    parser.add_argument("--y", action="store_true", help="Response by default value for all prompts")
+    parser.add_argument("-y", action="store_true", help="Response by default value for all prompts")
     parser.add_argument("--set-env", action="store_true", help="Set environment variable, saving into .env")
     args = parser.parse_args()
 
