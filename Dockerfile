@@ -128,15 +128,21 @@ RUN mkdir -p ~/git/ && \
     cd Learning && \
     parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
 
-# java & scala
+# java
 RUN curl -s "https://get.sdkman.io" | bash && \
     source ~/.sdkman/bin/sdkman-init.sh && \
     export SDKMAN_AUTO_ANSWER=true && \
-    sdk install java 17.0.12-oracle && \
-    sdk install sbt && \
-    yay -S --noconfirm coursier && \
-    coursier setup -y && \
-    coursier install metals
+    if which sdk; then sdk install java 17.0.12-oracle; fi
+
+# scala
+RUN if which sdk; then \
+        source ~/.sdkman/bin/sdkman-init.sh && \
+        export SDKMAN_AUTO_ANSWER=true && \
+        sdk install sbt && \
+        yay -S --noconfirm coursier && \
+        coursier setup -y && \
+        coursier install metals; \
+    fi
 
 # nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash && \
