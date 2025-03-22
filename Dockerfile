@@ -117,14 +117,19 @@ RUN sudo pacman -Sy --noconfirm tk pyenv && \
     pyenv install 3.13.2 >> /dev/null 2>&1 && \
     pyenv global 3.13.2
 
-
 # java (using sdkman)
-RUN curl -s "https://get.sdkman.io" | bash && \
+RUN if [ ! -s "~/.sdkman/bin/sdkman-init.sh" ]; then curl -s "https://get.sdkman.io" | bash; fi && \
     source ~/.sdkman/bin/sdkman-init.sh && \
     export SDKMAN_AUTO_ANSWER=true && \
-    if which sdk; then \
-        sdk install java 17.0.12-oracle && \
-        # scala (require sdkman)
+    if command -v sdk &> /dev/null; then \
+        sdk install java 17.0.12-oracle; \
+    fi
+
+# scala (require sdkman)
+RUN if [ ! -s "~/.sdkman/bin/sdkman-init.sh" ]; then curl -s "https://get.sdkman.io" | bash; fi && \
+    source ~/.sdkman/bin/sdkman-init.sh && \
+    export SDKMAN_AUTO_ANSWER=true && \
+    if command -v sdk &> /dev/null; then \
         sdk install sbt && \
         yay -S --noconfirm coursier && \
         coursier setup -y && \
