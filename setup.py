@@ -169,7 +169,9 @@ def export_wsl(container_name, env_vars, force_default=False):
         ], check=True)
         print(f"Starting container. (name: '{container_name}')")
 
-        export_path = input("Enter output directory for wsl file (default: current directory): ").strip()
+        export_path = input_with_default("Enter output directory for wsl file", "current directory", force_default).strip()
+        if export_path == "current directory":
+            export_path = "."
         if not export_path:
             export_path = os.getcwd()
 
