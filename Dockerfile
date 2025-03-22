@@ -128,7 +128,7 @@ RUN mkdir -p ~/git/ && \
     cd Learning && \
     parallel 'git clone -b {} https://github.com/bella2391/Learning.git {}' ::: c js/ts master python rust scala
 
-# scala
+# java & scala
 RUN curl -s "https://get.sdkman.io" | bash && \
     source ~/.sdkman/bin/sdkman-init.sh && \
     export SDKMAN_AUTO_ANSWER=true && \
