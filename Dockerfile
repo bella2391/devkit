@@ -122,18 +122,13 @@ RUN sudo pacman -Sy --noconfirm tk pyenv && \
 RUN curl -s "https://get.sdkman.io" | bash && \
     source ~/.sdkman/bin/sdkman-init.sh && \
     export SDKMAN_AUTO_ANSWER=true && \
-    if which sdk; then sdk install java 17.0.12-oracle; fi
-
-# scala (require sdkman)
-RUN if [ -s "~/.sdkman/bin/sdkman-init.sh" ]; then \
-        source ~/.sdkman/bin/sdkman-init.sh && \
-        export SDKMAN_AUTO_ANSWER=true && \
-        if which sdk; then \
-            sdk install sbt && \
-            yay -S --noconfirm coursier && \
-            coursier setup -y && \
-            coursier install metals; \
-        fi \
+    if which sdk; then \
+        sdk install java 17.0.12-oracle && \
+        # scala (require sdkman)
+        sdk install sbt && \
+        yay -S --noconfirm coursier && \
+        coursier setup -y && \
+        coursier install metals; \
     fi
 
 # nvm/npm
