@@ -5,3 +5,4 @@
 *.copy
 *.wsl
 *.generated
+.docker_temp_*
