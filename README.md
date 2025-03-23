@@ -22,5 +22,13 @@ options:
   --set-env      Set environment variable, saving into .env
 ```
 
+## Note
+If you want to use gui application like discord.  
+You should write `C:\Users\<user>\.wslconfig` like below.  
+```
+[wsl2]
+guiApplications = true
+```
+
 ## License
 [MIT](LICENSE.txt)
