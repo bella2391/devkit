@@ -54,6 +54,12 @@ RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/group; then \
     chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
 
 # WSL2
+ARG PYTHON_VERSION=3.13.2
+ARG NODE_VERSION=22.12.0
+ARG NERDFONT_AGAVE_VERSION=v3.3.0
+ARG WIN32YANK_VERSION=v0.1.1
+ARG JAVA_VERSION=17.0.12-oracle
+ARG NVM_VERSION=v0.40.2
 ARG NPIPERELAY_VERSION=v0.1.0
 
 WORKDIR /app
@@ -102,12 +108,12 @@ RUN sudo pacman -Sy --noconfirm go && \
 
 # custom fonts
 RUN mkdir -p ~/.local/share/fonts && \
-    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Agave.zip && \
+    wget https://github.com/ryanoasis/nerd-fonts/releases/download/${NERDFONT_AGAVE_VERSION}/Agave.zip && \
     unzip Agave.zip -d ~/.local/share/fonts/ && \
     fc-cache -fv
 
 # win32yank for wsl
-RUN wget https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip && \
+RUN wget https://github.com/equalsraf/win32yank/releases/download/${WIN32YANK_VERSION}/win32yank-x64.zip && \
     unzip win32yank-x64.zip -d ~/.global/bin/ && \
     rm ~/.global/bin/README.md ~/.global/bin/LICENSE && \
     chmod +x ~/.global/bin/win32yank.exe
@@ -122,15 +128,15 @@ RUN sudo pacman -Sy --noconfirm tk pyenv && \
     eval "$(pyenv init --path)" && \
     eval "$(pyenv init -)" && \
     eval "$(pyenv virtualenv-init -)" && \
-    pyenv install 3.13.2 >> /dev/null 2>&1 && \
-    pyenv global 3.13.2
+    pyenv install ${PYTHON_VERSION} >> /dev/null 2>&1 && \
+    pyenv global ${PYTHON_VERSION}
 
 # java (using sdkman)
 RUN if [ ! -s "~/.sdkman/bin/sdkman-init.sh" ]; then curl -s "https://get.sdkman.io" | bash; fi && \
     source ~/.sdkman/bin/sdkman-init.sh && \
     export SDKMAN_AUTO_ANSWER=true && \
     if command -v sdk &> /dev/null; then \
-        sdk install java 17.0.12-oracle; \
+        sdk install java ${JAVA_VERSION}; \
     fi
 
 # scala (require sdkman)
@@ -145,11 +151,13 @@ RUN if [ ! -s "~/.sdkman/bin/sdkman-init.sh" ]; then curl -s "https://get.sdkman
     fi
 
 # nvm/npm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash && \
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash && \
     export NVM_DIR="$HOME/.nvm" && \
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
-    nvm install 22.12.0
+    nvm install ${NODE_VERSION} && \
+    nvm use ${NODE_VERSION}
+
 # this is vyfor/cord.nvim setting in just only wsl environment
 # using at https://github.com/bella2391/dotfiles/blob/master/.wsl/.bashrc#L26
 # refer to https://github.com/vyfor/cord.nvim/wiki/Troubleshooting#-running-cord-in-specific-environments
