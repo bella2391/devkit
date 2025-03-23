@@ -79,7 +79,7 @@ USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
-    kitty imagemagick starship w3m lazygit neovim firefox
+    kitty imagemagick starship w3m lazygit neovim firefox discord
 
 # dotfiles
 RUN git clone https://github.com/bella2391/dotfiles.git && \
