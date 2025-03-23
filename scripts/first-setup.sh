@@ -25,7 +25,7 @@ else
   echo -e "\nFailed to cancel systemd-firstboot.service."
 fi
 
-if systemctl enable --now discord.service 2>&1 /dev/null; then
+if systemctl enable --now discord.service 2> /dev/null; then
   echo -e "\ndiscord.service enabled and started successfully."
 else
   echo -e "\nFailed to enable or start discord.service."
