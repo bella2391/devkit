@@ -36,6 +36,9 @@ RUN echo LANG=en_US.UTF-8 > /etc/locale.conf && \
     echo "en_US.UTF-8 UTF-8" | tee -a /etc/locale.gen && \
     locale-gen
 
+# System fonts (Japanese font)
+RUN pacman -Sy --noconfirm noto-fonts-cjk
+
 # Timezone
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     echo "Asia/Tokyo" > /etc/timezone
@@ -95,7 +98,7 @@ RUN sudo pacman -Sy --noconfirm go && \
     makepkg --noconfirm -si && \
     yay -Syyu --noconfirm
 
-# fonts
+# custom fonts
 RUN mkdir -p ~/.local/share/fonts && \
     wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Agave.zip && \
     unzip Agave.zip -d ~/.local/share/fonts/ && \
