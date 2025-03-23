@@ -54,6 +54,8 @@ RUN if ! grep -q "^${DOCKER_GROUP}:" /etc/group; then \
     chown -R ${DOCKER_USER}:${DOCKER_USER} /home/${DOCKER_USER}
 
 # WSL2
+ARG NPIPERELAY_VERSION=v0.1.0
+
 WORKDIR /app
 COPY . /app/
 
@@ -79,7 +81,7 @@ USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
-    kitty imagemagick starship w3m lazygit neovim firefox discord
+    kitty imagemagick starship w3m lazygit neovim firefox discord socat
 
 # dotfiles
 RUN git clone https://github.com/bella2391/dotfiles.git && \
@@ -148,4 +150,12 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | b
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
     nvm install 22.12.0
+# this is vyfor/cord.nvim setting in just only wsl environment
+# using at https://github.com/bella2391/dotfiles/blob/master/.wsl/.bashrc#L26
+# refer to https://github.com/vyfor/cord.nvim/wiki/Troubleshooting#-running-cord-in-specific-environments
+#          https://gist.github.com/mousebyte/af45cbecaf0028ea78d0c882c477644a#aliasing-nvim
+RUN mkdir -p ~/.global/bin/ && \
+    wget https://github.com/jstarks/npiperelay/releases/download/${NPIPERELAY_VERSION}/npiperelay_windows_amd64.zip && \
+    unzip npiperelay_windows_amd64.zip -d ~/.global/bin/ && \
+    rm ~/.global/bin/LICENSE ~/.global/bin/README.md
 
