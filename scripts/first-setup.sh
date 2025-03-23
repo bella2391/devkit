@@ -13,21 +13,21 @@ if [ -f "/.dockerenv" ]; then
 fi
 
 if pacman-key --init 2> /dev/null; then
-  echo "pacman key initialized successfully."
+  echo -e "\npacman key initialized successfully."
 else
-  echo "Failed to initialize pacman key."
+  echo -e "\nFailed to initialize pacman key."
 fi
 
 # See https://gitlab.archlinux.org/archlinux/archlinux-wsl/-/issues/3
 if systemctl cancel "$(systemctl list-jobs | grep systemd-firstboot.service | awk '{print $1}')" 2> /dev/null || true; then
-  echo "systemd-firstboot.service canceled successfully."
+  echo -e "\nsystemd-firstboot.service canceled successfully."
 else
-  echo "Failed to cancel systemd-firstboot.service."
+  echo -e "\nFailed to cancel systemd-firstboot.service."
 fi
 
-if systemctl enable --now discord.service; then
-  echo "discord.service enabled and started successfully."
+if systemctl enable --now discord.service 2>&1 /dev/null; then
+  echo -e "\ndiscord.service enabled and started successfully."
 else
-  echo "Failed to enable or start discord.service."
+  echo -e "\nFailed to enable or start discord.service."
 fi
 
