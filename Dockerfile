@@ -68,6 +68,9 @@ RUN pacman -Sy --noconfirm dos2unix && \
     cp assets/archlinux.ico /usr/lib/wsl/archlinux.ico && \
     cp scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
 
+RUN mkdir -p /etc/tmpfiles.d && \
+    echo "L+ /tmp/.X11-unix - - - - /mnt/wslg/.X11-unix" > /etc/tmpfiles.d/wslg.conf
+
 # create development for programming
 USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
