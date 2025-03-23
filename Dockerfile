@@ -58,18 +58,18 @@ WORKDIR /app
 COPY . /app/
 
 RUN pacman -Sy --noconfirm dos2unix && \
-    find config scripts -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; >> /dev/null 2>&1 && \
-    sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" config/wsl.conf && \
-    sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g" scripts/first-setup.sh && \
+    find config scripts services -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; >> /dev/null 2>&1 && \
+    sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g; s/\${DOCKER_GROUP}/${DOCKER_GROUP}/g" config/wsl.conf scripts/first-setup.sh services/discord.service && \
     chmod 644 config/wsl.conf && \
     chmod 644 config/wsl-distribution.conf && \
     chmod +x scripts/first-setup.sh && \
     mkdir -p /usr/lib/wsl/ && \
-    cp config/wsl.conf /etc/wsl.conf && \
-    cp config/wsl-distribution.conf /etc/wsl-distribution.conf && \
-    cp config/terminal-profile.json /usr/lib/wsl/terminal-profile.json && \
-    cp assets/archlinux.ico /usr/lib/wsl/archlinux.ico && \
-    cp scripts/first-setup.sh /usr/lib/wsl/first-setup.sh
+    cp config/wsl.conf /etc/ && \
+    cp config/wsl-distribution.conf /etc/ && \
+    cp config/terminal-profile.json /usr/lib/wsl/ && \
+    cp assets/archlinux.ico /usr/lib/wsl/ && \
+    cp scripts/first-setup.sh /usr/lib/wsl/ && \
+    cp services/discord.service /etc/systemd/system/
 
 RUN mkdir -p /etc/tmpfiles.d && \
     echo "L+ /tmp/.X11-unix - - - - /mnt/wslg/.X11-unix" > /etc/tmpfiles.d/wslg.conf
