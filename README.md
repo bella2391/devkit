@@ -11,7 +11,7 @@ Click to go to youtube.
   
 WSL2 is needless for developers which wanna work in only Docker container.  
 This is the reason so that WSL2 is enclosed by parentheses.  
-They can use a debug option like `python setup.py -i -d`.
+They can use a debug flag like `python setup.py -i -d`.
 
 ## Command
 ```
