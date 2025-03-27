@@ -6,6 +6,7 @@ Click to go to youtube.
 
 ## Require
 * Docker
+* WSL2
 * Python
 
 ## Command
