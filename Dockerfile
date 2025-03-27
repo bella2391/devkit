@@ -16,20 +16,20 @@ RUN curl -s "https://archlinux.org/mirrorlist/?country=JP" | sed -e 's/^#Server/
     sed -i -e 's|^\(NoExtract *= *usr/share/man/\)|#\1|' /etc/pacman.conf
 
 RUN pacman-key --init >> /dev/null && \
-    pacman -Syyu --noconfirm && \
-    pacman -Sy --noconfirm \
-    base base-devel \
-    bash bash-completion \
-    sudo \
-    man-db man-pages \
-    coreutils \
-    gzip unzip zip tree which less wget binutils parallel \
-    gvim \
-    git \
-    systemd \
-    systemd-sysvcompat \
-    && \
-    pacman -Scc
+  pacman -Syyu --noconfirm && \
+  pacman -Sy --noconfirm \
+  base base-devel \
+  bash bash-completion \
+  sudo \
+  man-db man-pages \
+  coreutils \
+  gzip unzip zip tree which less wget binutils parallel \
+  gvim \
+  git \
+  systemd \
+  systemd-sysvcompat \
+  && \
+  pacman -Scc
 
 # Locale
 RUN echo LANG=en_US.UTF-8 > /etc/locale.conf && \
@@ -139,7 +139,7 @@ RUN if [ ! -s "~/.sdkman/bin/sdkman-init.sh" ]; then curl -s "https://get.sdkman
   source ~/.sdkman/bin/sdkman-init.sh && \
   export SDKMAN_AUTO_ANSWER=true && \
   if command -v sdk &> /dev/null; then \
-      sdk install java ${JAVA_VERSION}; \
+    sdk install java ${JAVA_VERSION}; \
   fi
 
 # scala (require sdkman)
@@ -147,10 +147,10 @@ RUN if [ ! -s "~/.sdkman/bin/sdkman-init.sh" ]; then curl -s "https://get.sdkman
   source ~/.sdkman/bin/sdkman-init.sh && \
   export SDKMAN_AUTO_ANSWER=true && \
   if command -v sdk &> /dev/null; then \
-      sdk install sbt && \
-      yay -S --noconfirm coursier && \
-      coursier setup -y && \
-      coursier install metals; \
+    sdk install sbt && \
+    yay -S --noconfirm coursier && \
+    coursier setup -y && \
+    coursier install metals; \
   fi
 
 # nvm/npm
