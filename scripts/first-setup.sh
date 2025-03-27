@@ -5,11 +5,11 @@ set -ue
 user="${DOCKER_USER}"
 cat <<EOF
 From devkit,
-    Hello, ${user}!
+  Hello, ${user}!
 EOF
 
 if [ -f "/.dockerenv" ]; then
-    rm /.dockerenv
+  rm /.dockerenv
 fi
 
 if pacman-key --init 2> /dev/null; then
