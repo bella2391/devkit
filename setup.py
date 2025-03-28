@@ -147,7 +147,7 @@ CMD ["/usr/lib/systemd/systemd"]
 
 def run_docker_container_with_tty(container_name, env_vars, force_default=False):
   if not container_name:
-    print("Running container skipped. (detected an unamed container name)")
+    print("Running container is skipped. (detected an unamed container name)")
     return
 
   run_confirmation = input_with_default(
@@ -175,7 +175,7 @@ def run_docker_container_with_tty(container_name, env_vars, force_default=False)
     except subprocess.CalledProcessError as e:
       print(f"An error occurred: {e}")
   else:
-    print("Running container skipped.")
+    print("Running container is skipped.")
 
 
 def animated_message(stop_event):
@@ -257,7 +257,7 @@ def export_wsl(container_name, env_vars, force_default=False):
       print(f"Starting import '{container_name}'.")
       subprocess.run(["wsl", "--install", "--from-file", wsl_file_path], check=True)
     else:
-      print(f"Import of '{container_name}.wsl' skipped.")
+      print(f"Import of '{container_name}.wsl' is skipped.")
 
     rm_container_confirmation = input_with_default(
       "Do you delete current working container?", "y", force_default
@@ -273,9 +273,9 @@ def export_wsl(container_name, env_vars, force_default=False):
         subprocess.run(["docker", "rmi", container_name], check=True)
         print(f"Image deleted. (name: '{container_name}')")
       else:
-        print(f"Deletion of image skipped. (name: '{container_name}')")
+        print(f"Deletion of image is skipped. (name: '{container_name}')")
     else:
-      print(f"Deletion of container skipped. (name: '{container_name}')")
+      print(f"Deletion of container is skipped. (name: '{container_name}')")
 
     rm_wsl_file_confirmation = input_with_default(
       f"Do you delete wsl file? (name: '{container_name}.wsl')",
@@ -286,7 +286,7 @@ def export_wsl(container_name, env_vars, force_default=False):
     if rm_wsl_file_confirmation == "y":
       os.remove(wsl_file_path)
     else:
-      print(f"Deletion of '{container_name}.wsl' skipped.")
+      print(f"Deletion of '{container_name}.wsl' is skipped.")
 
     print("All operation done.")
   else:
@@ -338,7 +338,7 @@ if __name__ == "__main__":
           os.remove(".env")
           env_vars = prompt_env({}, args.y)
         else:
-          print("Setting environment variables skipped.")
+          print("Setting environment variables is skipped.")
       else:
         env_vars = prompt_env({})
     elif args.debug:
