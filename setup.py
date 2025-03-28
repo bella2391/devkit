@@ -288,7 +288,7 @@ def export_wsl(container_name, env_vars, force_default=False):
     else:
       print(f"Deletion of '{container_name}.wsl' is skipped.")
 
-    print("All operation done.")
+    print("All operation is done.")
   else:
     print("\nOperation of exporting wsl file is canceled.")
 
