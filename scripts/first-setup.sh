@@ -30,9 +30,3 @@ if systemctl enable --now discord.service 2>/dev/null; then
 else
   echo -e "\nFailed to enable or start discord.service."
 fi
-
-if systemctl --user enable --now gnome-keyring-daemon 2>/dev/null; then
-  echo -e "\ngnome-keyring-daemon enabled and started successfully."
-else
-  echo -e "\nFailed to enable or start gnome-keyring-daemon."
-fi
