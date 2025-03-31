@@ -1,4 +1,4 @@
-# WSL-DevKit
+# devkit
 
 ## Demo
 Click to go to youtube.
