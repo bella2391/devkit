@@ -36,5 +36,8 @@ You should write `C:\Users\<user>\.wslconfig` like below.
 guiApplications = true
 ```
 
+## Credits
+This project uses other external assets someone creates - see the [CREDITS](CREDITS)
+
 ## License
-[MIT](LICENSE.txt)
+[MIT](LICENSE)
