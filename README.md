@@ -2,7 +2,7 @@
 
 ## Demo
 Click to go to youtube.
-[![Export Docker ArchLinux Image into WSL 【Devkit v.0.0.2】](https://github.com/bella2391/branding/blob/master/explain/wsl/export_wsl.jpg)](https://youtu.be/ipeYIXy0GXE)
+[![Export Docker ArchLinux Image into WSL 【Devkit v.0.0.2】](https://raw.githubusercontent.com/bella2391/branding/refs/heads/master/repo/devkit/export_wsl.jpg)](https://youtu.be/ipeYIXy0GXE)
 
 ## Require
 * Docker
