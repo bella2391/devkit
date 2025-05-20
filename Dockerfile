@@ -98,7 +98,9 @@ RUN git clone https://github.com/verazza/dotfiles.git && \
   mkdir -p ~/.config/ && \
   find . -mindepth 1 -maxdepth 1 -exec mv -t ~/.config/ {} + && \
   cd ~ && \
-  git submodule update --init --recursive
+  git submodule update --init --recursive && \
+  chmod +x ~/.config/nvim/lsp.sh && \
+  ~/.config/nvim/lsp.sh
 
 # yay
 RUN sudo pacman -Sy --noconfirm go && \
