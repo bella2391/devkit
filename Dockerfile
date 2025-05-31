@@ -164,7 +164,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install
   nvm use ${NODE_VERSION}
 
 # this is vyfor/cord.nvim setting in just only wsl environment
-# using at https://github.com/takayamaekawa/dotfiles/blob/master/.win/wsl/.bashrc#L26
+# using at https://github.com/takayamaekawa/dotfiles/blob/master/.win/wsl/arch/.bashrc#L26
 # refer to https://github.com/vyfor/cord.nvim/wiki/Troubleshooting#-running-cord-in-specific-environments
 #          https://gist.github.com/mousebyte/af45cbecaf0028ea78d0c882c477644a#aliasing-nvim
 RUN mkdir -p ~/.global/bin/ && \
