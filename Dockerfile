@@ -60,14 +60,13 @@ ARG NERDFONT_AGAVE_VERSION=v3.3.0
 ARG WIN32YANK_VERSION=v0.1.1
 ARG JAVA_VERSION=17.0.12-oracle
 ARG NVM_VERSION=v0.40.2
-ARG NPIPERELAY_VERSION=v0.1.0
 
 WORKDIR /app
 COPY . /app/
 
 RUN pacman -Sy --noconfirm dos2unix && \
   find config scripts services -type f -exec sh -c 'iconv -f WINDOWS-1252 -t UTF-8 "$1" -o "$1.utf8" && mv "$1.utf8" "$1" && dos2unix "$1"' -- {} \; >> /dev/null 2>&1 && \
-  sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g; s/\${DOCKER_GROUP}/${DOCKER_GROUP}/g" config/wsl.conf scripts/first-setup.sh services/discord.service && \
+  sed -i "s/\${DOCKER_USER}/${DOCKER_USER}/g; s/\${DOCKER_GROUP}/${DOCKER_GROUP}/g" config/wsl.conf scripts/first-setup.sh && \
   chmod 644 config/wsl.conf && \
   chmod 644 config/wsl-distribution.conf && \
   chmod +x scripts/first-setup.sh && \
@@ -76,8 +75,7 @@ RUN pacman -Sy --noconfirm dos2unix && \
   cp config/wsl-distribution.conf /etc/ && \
   cp config/terminal-profile.json /usr/lib/wsl/ && \
   cp assets/archlinux.ico /usr/lib/wsl/ && \
-  cp scripts/first-setup.sh /usr/lib/wsl/ && \
-  cp services/discord.service /etc/systemd/system/
+  cp scripts/first-setup.sh /usr/lib/wsl/
 
 RUN mkdir -p /etc/tmpfiles.d && \
   echo "L+ /tmp/.X11-unix - - - - /mnt/wslg/.X11-unix" > /etc/tmpfiles.d/wslg.conf
@@ -87,7 +85,7 @@ USER ${DOCKER_USER}
 WORKDIR /home/${DOCKER_USER}/work
 
 RUN sudo pacman -Sy --noconfirm \
-  kitty imagemagick starship w3m lazygit neovim firefox discord \
+  kitty imagemagick starship w3m lazygit neovim firefox \
   socat ripgrep shfmt
 
 # dotfiles
@@ -162,13 +160,3 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
   nvm install ${NODE_VERSION} && \
   nvm use ${NODE_VERSION}
-
-# this is vyfor/cord.nvim setting in just only wsl environment
-# using at https://github.com/takayamaekawa/dotfiles/blob/master/.win/wsl/arch/.bashrc#L26
-# refer to https://github.com/vyfor/cord.nvim/wiki/Troubleshooting#-running-cord-in-specific-environments
-#          https://gist.github.com/mousebyte/af45cbecaf0028ea78d0c882c477644a#aliasing-nvim
-RUN mkdir -p ~/.global/bin/ && \
-  wget https://github.com/jstarks/npiperelay/releases/download/${NPIPERELAY_VERSION}/npiperelay_windows_amd64.zip && \
-  unzip npiperelay_windows_amd64.zip -d ~/.global/bin/ && \
-  rm ~/.global/bin/LICENSE ~/.global/bin/README.md
-
